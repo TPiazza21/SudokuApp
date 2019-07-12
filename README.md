@@ -1,3 +1,5 @@
+CS50 Final Project (Freshman Fall of 2017)
+
 Tyler Piazza
 
 Note: I wil go into detail on the actual algorithms in the design document.
