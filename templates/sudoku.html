@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Puzzle
+{% endblock %}
+
+{% block main %}
+<p><b id='title'>Difficulty: {{difficulty}}</b> </p>
+<p style="margin:0;">
+    <table id = "puzzle_grid" cellspacing = "0" cellpadding = "0" class = "t" align = "center">
+        <tbody>
+            {% for i in range(m*m) %}
+                <tr>
+                    {% for j in range(m*m) %}
+                        {% if puzzle[i][j] %}
+                            <td class="g0" id = "cell-{{i*9+j}}">
+                                <input class = "s0" size = "2" autocomplete="off" name = "puzz{{i}}{{j}}" readonly value = "{{puzzle[i][j]}}" id = "f{{i}}{{j}}" style="color: black">
+                            </td>
+                        {% else %}
+                            <td class="g0" id = "cell-{{i*9+j}}">
+                                <input class = "d0" size = "2" autocomplete="off" name = "puzz{{i}}{{j}}" maxlength = "5" onkeyup = "j5(this)" onblur = "j8(this)" id = "f{{i}}{{j}}" style="color: #4863A0">
+                            </td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</p>
+
+<button id = "checkbutton" onClick = "change()">How am I doing?</button></button>
+<p><b id='boldStuff'>Welcome to the site!</b> </p>
+<p><b>Click on "Sudoku" in upper left for a different puzzle!</b></p>
+
+<script>
+function change()
+{
+    var boardString = "";
+    var tempVal = 0;
+    // create a string that represents the board
+    for (var i = 0; i < 9; i++)
+    {
+        for (var j = 0;j < 9;j++)
+        {
+            tempVal = document.getElementById('f'+i+''+j).value;
+            if (tempVal.length == 1)
+            {
+                boardString+=tempVal;
+            }
+            else
+            {
+                // this is the case when there are penciled in comments or nothing input
+                boardString += 0;
+            }
+        }
+    }
+    let parameters = {
+        sentBoardString: boardString,
+    };
+
+    // send this string to /score, and get back the number of errors that you have made
+    $.getJSON("/score", parameters , function(data, textStatus, jqXHR) {
+        var printMe = '';
+        if(data == 100)
+        {
+            printMe = "Congrats! You solved the puzzle";
+        }
+        else if (data == 0)
+        {
+            printMe = "You've made no mistakes (since you last checked)";
+        }
+        else if (data > 0)
+        {
+            if (data == 1)
+            {
+                printMe = "Oops! You've made 1 mistake";
+            }
+            else
+            {
+                printMe = "Oops! You've made "+data+" mistakes";
+            }
+        }
+        document.getElementById('boldStuff').innerHTML = printMe;
+    });
+}
+</script>
+{% endblock %}
